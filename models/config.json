@@ -1,0 +1,503 @@
+{
+  "saits": {
+    "config": {
+      "seed": 2026,
+      "history_hours": 24,
+      "n_features": 12,
+      "epochs": 120,
+      "patience": 15,
+      "batch_size": 512,
+      "inference_batch_size": 1024,
+      "validation_k": [
+        3,
+        5,
+        8
+      ],
+      "threshold": 187.0,
+      "trials": [
+        {
+          "name": "small",
+          "n_layers": 1,
+          "d_model": 64,
+          "n_heads": 4,
+          "d_ffn": 128,
+          "dropout": 0.1,
+          "lr": 0.001
+        },
+        {
+          "name": "medium",
+          "n_layers": 1,
+          "d_model": 128,
+          "n_heads": 4,
+          "d_ffn": 256,
+          "dropout": 0.1,
+          "lr": 0.001
+        },
+        {
+          "name": "deep",
+          "n_layers": 2,
+          "d_model": 128,
+          "n_heads": 4,
+          "d_ffn": 256,
+          "dropout": 0.1,
+          "lr": 0.0005
+        }
+      ]
+    },
+    "selection_partition": "validation",
+    "test_used_for_selection": false,
+    "pypots_version": "2.0",
+    "official_class": "pypots.imputation.saits.model.SAITS",
+    "search_total_seconds": 401.7469595000148,
+    "winner": {
+      "trial": {
+        "name": "deep",
+        "n_layers": 2,
+        "d_model": 128,
+        "n_heads": 4,
+        "d_ffn": 256,
+        "dropout": 0.1,
+        "lr": 0.0005
+      },
+      "pypots_version": "2.0",
+      "selection_partition": "validation",
+      "best_epoch": 116,
+      "validation_mae": 10.135337829589844,
+      "gpu": "NVIDIA GeForce RTX 3080",
+      "training_seconds": 173.376224800013,
+      "history_hours": 24
+    },
+    "window_rule": "[t-24, ..., t-1, t]; only t is scored; partition-local left NaN padding",
+    "history_outage_rule": "Mask the full chronological scenario before forming overlapping windows"
+  },
+  "data": {
+    "source_url": "https://archive.ics.uci.edu/static/public/501/beijing%2Bmulti%2Bsite%2Bair%2Bquality%2Bdata.zip",
+    "license": "CC BY 4.0",
+    "source_records": 420768,
+    "shape": [
+      35064,
+      12
+    ],
+    "stations": [
+      "Aotizhongxin",
+      "Changping",
+      "Dingling",
+      "Dongsi",
+      "Guanyuan",
+      "Gucheng",
+      "Huairou",
+      "Nongzhanguan",
+      "Shunyi",
+      "Tiantan",
+      "Wanliu",
+      "Wanshouxigong"
+    ],
+    "splits": {
+      "train": {
+        "start": "2013-03-01 00:00:00",
+        "end": "2015-12-31 23:00:00",
+        "hours": 24864,
+        "valid_values": 292150,
+        "hours_with_any_ground_truth": 24818,
+        "complete_hours": 20213,
+        "valid_by_station": {
+          "Aotizhongxin": 24132,
+          "Changping": 24218,
+          "Dingling": 24400,
+          "Dongsi": 24497,
+          "Guanyuan": 24441,
+          "Gucheng": 24383,
+          "Huairou": 24083,
+          "Nongzhanguan": 24382,
+          "Shunyi": 24287,
+          "Tiantan": 24332,
+          "Wanliu": 24603,
+          "Wanshouxigong": 24392
+        }
+      },
+      "validation": {
+        "start": "2016-01-01 00:00:00",
+        "end": "2016-06-30 23:00:00",
+        "hours": 4368,
+        "valid_values": 51343,
+        "hours_with_any_ground_truth": 4359,
+        "complete_hours": 3534,
+        "valid_by_station": {
+          "Aotizhongxin": 4263,
+          "Changping": 4306,
+          "Dingling": 4275,
+          "Dongsi": 4228,
+          "Guanyuan": 4327,
+          "Gucheng": 4305,
+          "Huairou": 4282,
+          "Nongzhanguan": 4314,
+          "Shunyi": 4205,
+          "Tiantan": 4298,
+          "Wanliu": 4312,
+          "Wanshouxigong": 4228
+        }
+      },
+      "test": {
+        "start": "2016-07-01 00:00:00",
+        "end": "2017-02-28 23:00:00",
+        "hours": 5832,
+        "valid_values": 68536,
+        "hours_with_any_ground_truth": 5806,
+        "complete_hours": 4916,
+        "valid_by_station": {
+          "Aotizhongxin": 5744,
+          "Changping": 5766,
+          "Dingling": 5610,
+          "Dongsi": 5589,
+          "Guanyuan": 5680,
+          "Gucheng": 5730,
+          "Huairou": 5746,
+          "Nongzhanguan": 5740,
+          "Shunyi": 5659,
+          "Tiantan": 5757,
+          "Wanliu": 5767,
+          "Wanshouxigong": 5748
+        }
+      }
+    },
+    "missing_values": 8739,
+    "missing_fraction": 0.020769164955509924,
+    "missing_by_station": {
+      "Aotizhongxin": 925,
+      "Changping": 774,
+      "Dingling": 779,
+      "Dongsi": 750,
+      "Guanyuan": 616,
+      "Gucheng": 646,
+      "Huairou": 953,
+      "Nongzhanguan": 628,
+      "Shunyi": 913,
+      "Tiantan": 677,
+      "Wanliu": 382,
+      "Wanshouxigong": 696
+    },
+    "timestamp_policy": "Source local wall-clock hour, interpreted as Beijing time (UTC+8); no timezone conversion.",
+    "files": [
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Aotizhongxin_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Changping_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Dingling_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Dongsi_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Guanyuan_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Gucheng_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Huairou_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Nongzhanguan_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Shunyi_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Tiantan_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Wanliu_20130301-20170228.csv",
+        "rows": 35064
+      },
+      {
+        "name": "PRSA_Data_20130301-20170228/PRSA_Data_Wanshouxigong_20130301-20170228.csv",
+        "rows": 35064
+      }
+    ]
+  },
+  "station_selection": {
+    "optimization_partition": "validation",
+    "model": "ordinary",
+    "objective": "MAE on genuinely observed, nominally offline stations",
+    "validation_start": "2016-01-01 00:00:00",
+    "validation_end": "2016-06-30 23:00:00",
+    "choices": {
+      "3": {
+        "indices": [
+          1,
+          4,
+          8
+        ],
+        "stations": [
+          "Changping",
+          "Guanyuan",
+          "Shunyi"
+        ],
+        "validation_mae": 11.897814750671387,
+        "candidates": 220
+      },
+      "5": {
+        "indices": [
+          1,
+          5,
+          7,
+          8,
+          11
+        ],
+        "stations": [
+          "Changping",
+          "Gucheng",
+          "Nongzhanguan",
+          "Shunyi",
+          "Wanshouxigong"
+        ],
+        "validation_mae": 10.410734176635742,
+        "candidates": 792
+      },
+      "8": {
+        "indices": [
+          1,
+          2,
+          5,
+          6,
+          7,
+          8,
+          10,
+          11
+        ],
+        "stations": [
+          "Changping",
+          "Dingling",
+          "Gucheng",
+          "Huairou",
+          "Nongzhanguan",
+          "Shunyi",
+          "Wanliu",
+          "Wanshouxigong"
+        ],
+        "validation_mae": 8.965975761413574,
+        "candidates": 495
+      }
+    }
+  },
+  "training": {
+    "seed": 2026,
+    "device": "cuda",
+    "epochs": 250,
+    "patience": 30,
+    "batch_size": 1024,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "extreme_weight": 3.0,
+    "ridge_alphas": [
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "ridge_augmentations": 12,
+    "validation_operational_counts": [
+      3,
+      5,
+      8
+    ],
+    "test_operational_counts": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "evaluation_repeats": 3,
+    "selection_k": [
+      3,
+      5,
+      8
+    ],
+    "random_selection_comparators": 50
+  },
+  "preprocessing": {
+    "mean": [
+      85.17012023925781,
+      73.9594955444336,
+      67.99351501464844,
+      87.26942443847656,
+      84.41834259033203,
+      85.12516784667969,
+      72.40203094482422,
+      87.00550842285156,
+      81.25374603271484,
+      84.17001342773438,
+      86.97772979736328,
+      86.03838348388672
+    ],
+    "std": [
+      81.32585144042969,
+      72.78108215332031,
+      73.31800842285156,
+      85.08643341064453,
+      79.95439910888672,
+      81.11996459960938,
+      71.77081298828125,
+      86.07811737060547,
+      79.81517028808594,
+      80.07747650146484,
+      81.75264739990234,
+      84.20938110351562
+    ],
+    "threshold": 187.0,
+    "fit_partition": "train",
+    "fit_start": "2013-03-01 00:00:00",
+    "fit_end": "2015-12-31 23:00:00",
+    "valid_train_values": 292150
+  },
+  "final": {
+    "seed": 2026,
+    "history_hours": 24,
+    "epochs": 200,
+    "patience": 25,
+    "batch_size": 1024,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "validation_k": [
+      3,
+      5,
+      8
+    ],
+    "true_event_threshold": 187.0,
+    "ensemble_weights_saits": [
+      0.0,
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      1.0
+    ],
+    "decision_thresholds": [
+      140,
+      145,
+      150,
+      155,
+      160,
+      165,
+      170,
+      175,
+      180,
+      185,
+      187,
+      190,
+      195,
+      200,
+      205,
+      210,
+      215,
+      220,
+      225
+    ],
+    "max_mae_ratio_to_saits": 1.05,
+    "failure_durations_hours": [
+      1,
+      6,
+      24,
+      72,
+      168
+    ],
+    "failure_operational_k": [
+      3,
+      5,
+      8
+    ],
+    "failure_repeats": 3,
+    "failure_first_endpoint": 167,
+    "failure_endpoint_stride": 173
+  },
+  "ensemble": {
+    "partition": "validation",
+    "criterion": "maximum F1 subject MAE <=1.05*SAITS MAE",
+    "true_event_threshold": 187.0,
+    "saits_reference": {
+      "n": 85571,
+      "mae": 10.135339736938477,
+      "rmse": 19.986282348632812,
+      "high_n": 5153,
+      "high_mae": 30.15555763244629,
+      "precision": 0.8952674897119342,
+      "recall": 0.8443625072773142,
+      "f1": 0.8690702087286527,
+      "tp": 4351,
+      "fp": 509,
+      "fn": 802,
+      "decision_threshold": 187.0
+    },
+    "mae_limit": 10.642106723785401,
+    "selected": {
+      "weight_saits": 0.8,
+      "n": 85571,
+      "mae": 10.129241943359375,
+      "rmse": 19.482040405273438,
+      "high_n": 5153,
+      "high_mae": 29.30659294128418,
+      "precision": 0.8936126932465419,
+      "recall": 0.8525130991655346,
+      "f1": 0.8725792034958785,
+      "tp": 4393,
+      "fp": 523,
+      "fn": 760,
+      "decision_threshold": 187.0,
+      "feasible": true
+    },
+    "calibrated_saits": {
+      "weight_saits": 1.0,
+      "n": 85571,
+      "mae": 10.135339736938477,
+      "rmse": 19.986282348632812,
+      "high_n": 5153,
+      "high_mae": 30.15555763244629,
+      "precision": 0.8589525430138022,
+      "recall": 0.8816223559091791,
+      "f1": 0.8701398199578625,
+      "tp": 4543,
+      "fp": 746,
+      "fn": 610,
+      "decision_threshold": 180.0,
+      "feasible": true
+    },
+    "test_used_for_selection": false,
+    "validation_target_count": 85571
+  }
+}
