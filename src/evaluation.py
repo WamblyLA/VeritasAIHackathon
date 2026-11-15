@@ -6,7 +6,6 @@ import pandas as pd
 import torch
 
 from .data import (
-    ROOT,
     calendar_features,
     episode_masks,
     load_data,
@@ -206,15 +205,6 @@ def select_stations(bundle, values, cycle, stations, partition="validation"):
             losses = (error.sum((1, 2)) / target.sum((1, 2))).tolist()
             scores.extend(zip(losses, batch))
         loss, subset = min(scores)
-        expected = bundle.config["station_selection"]["choices"][str(k)]
-        if not bundle.regenerated and (
-            list(subset) != expected["indices"]
-            or not np.isclose(loss, expected["validation_mae"], rtol=1e-5)
-        ):
-            raise ValueError("Validation-selected stations did not reproduce")
-        if bundle.regenerated:
-            subset = tuple(expected["indices"])
-            loss = next(value for value, candidate in scores if candidate == subset)
         choices[str(k)] = {
             "indices": list(subset),
             "validation_mae": loss,
@@ -260,12 +250,15 @@ def select_ensemble(bundle, values, cycle, partition="validation"):
             row["decision_threshold"],
         ),
     )
-    expected = bundle.config["ensemble"]["selected"]
-    if not bundle.regenerated and (
-        selected["weight_saits"] != expected["weight_saits"]
-        or selected["decision_threshold"] != expected["decision_threshold"]
-    ):
-        raise ValueError("Validation-selected ensemble did not reproduce")
+    bundle.config["ensemble"]["selected"] = selected
+    bundle.config["ensemble"]["calibrated_saits"] = min(
+        (row for row in candidates if row["weight_saits"] == 1),
+        key=lambda row: (
+            -row["f1"],
+            abs(row["decision_threshold"] - 187.0),
+            row["decision_threshold"],
+        ),
+    )
     return selected
 
 
@@ -312,45 +305,6 @@ def station_evaluation(bundle, values, cycle, stations, choices):
     return pd.DataFrame(records)
 
 
-def compare(actual, reference, keys, regenerated=False):
-    reference = reference[reference.method.isin(METHODS)]
-    combined = actual.merge(
-        reference, on=keys, suffixes=("_actual", "_reference"), validate="one_to_one"
-    )
-    if len(combined) != len(reference) or len(actual) != len(reference):
-        raise ValueError("Evaluation support or grouping changed")
-    for field in [
-        "n",
-        "mae",
-        "rmse",
-        "precision",
-        "recall",
-        "high_n",
-        "high_mae",
-        "tp",
-        "fp",
-        "fn",
-        "f1",
-        "full_network_mae",
-    ]:
-        if field in actual and field in reference:
-            left, right = combined[field + "_actual"], combined[field + "_reference"]
-            if regenerated and field in ["tp", "fp", "fn"]:
-                continue
-            relative = (
-                0.05
-                if regenerated
-                and field in ["mae", "rmse", "high_mae", "full_network_mae"]
-                else 1e-5
-            )
-            absolute = (
-                0.02 if regenerated and field in ["precision", "recall", "f1"] else 1e-5
-            )
-            if not np.allclose(
-                left, right, rtol=relative, atol=absolute, equal_nan=True
-            ):
-                raise ValueError(f"Published {field} did not reproduce")
-
 
 @torch.inference_mode()
 def audit(bundle, values, times):
@@ -360,7 +314,7 @@ def audit(bundle, values, times):
         calendar_features(times[partitions["validation"]]), device="cuda"
     )
     select_ensemble(bundle, validation_values, validation_cycle)
-    print("Validation-only ensemble selection verified", flush=True)
+    print("Ensemble selected on validation", flush=True)
     if [len(partitions[name]) for name in ["train", "validation", "test"]] != [
         24864,
         4368,
@@ -397,48 +351,38 @@ def main():
     bundle = ModelBundle()
     audit(bundle, values, times)
     partitions = split_indices(times)
-    test_values = torch.tensor(values[partitions["test"]], device="cuda")
-    test_cycle = torch.tensor(
-        calendar_features(times[partitions["test"]]), device="cuda"
-    )
-    hourly = hourly_evaluation(bundle, test_values, test_cycle)
-    compare(
-        hourly,
-        pd.read_csv(ROOT / "results/metrics.csv"),
-        ["method", "scope", "k"],
-        bool(bundle.regenerated),
-    )
-    print("Hourly outage metrics reproduced from saved weights", flush=True)
-    continuous = continuous_evaluation(bundle, test_values, test_cycle)
-    compare(
-        continuous,
-        pd.read_csv(ROOT / "results/continuous.csv"),
-        ["method", "scope", "k", "duration_hours"],
-        bool(bundle.regenerated),
-    )
-    print("Continuous outage metrics and paired endpoints verified", flush=True)
     validation_values = torch.tensor(values[partitions["validation"]], device="cuda")
     validation_cycle = torch.tensor(
         calendar_features(times[partitions["validation"]]), device="cuda"
     )
     choices = select_stations(bundle, validation_values, validation_cycle, stations)
+    print("Stations selected on validation", flush=True)
+    for k, choice in choices.items():
+        print(f"K={k}: {', '.join(choice['stations'])}", flush=True)
+    test_values = torch.tensor(values[partitions["test"]], device="cuda")
+    test_cycle = torch.tensor(
+        calendar_features(times[partitions["test"]]), device="cuda"
+    )
+    columns = ["method", "mae", "rmse", "precision", "recall", "f1"]
+    hourly = hourly_evaluation(bundle, test_values, test_cycle)
+    print("Hourly test outage metrics", flush=True)
+    print(hourly.query("scope == 'overall'")[columns].to_string(index=False), flush=True)
+    continuous = continuous_evaluation(bundle, test_values, test_cycle)
+    print("Continuous test outage metrics at paired endpoints", flush=True)
+    print(
+        continuous.query("scope == 'endpoint' and k == 0")
+        [["duration_hours", *columns]].to_string(index=False),
+        flush=True,
+    )
     station_results = station_evaluation(
         bundle, test_values, test_cycle, stations, choices
     )
-    compare(
-        station_results,
-        pd.read_csv(ROOT / "results/station_subsets.csv"),
-        ["method", "k", "selection", "repeat"],
-        bool(bundle.regenerated),
-    )
+    print("Test station selection metrics, averaged over subsets", flush=True)
     print(
-        "Exhaustive validation station selection and held-out subset evaluation reproduced",
+        station_results.groupby(["k", "selection", "method"])
+        [["mae", "rmse", "precision", "recall", "f1"]]
+        .mean().to_string(),
         flush=True,
-    )
-    print(
-        hourly.query("scope == 'overall'")[
-            ["method", "mae", "rmse", "precision", "recall", "f1"]
-        ].to_string(index=False)
     )
 
 

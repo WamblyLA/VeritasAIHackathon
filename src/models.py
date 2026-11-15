@@ -149,14 +149,6 @@ class ModelBundle:
             "saits",
         ]:
             ensure_checkpoint(name)
-        self.regenerated = [
-            name
-            for name in CHECKPOINTS
-            if torch.load(
-                ROOT / f"models/{name}.pt", map_location="cpu", weights_only=True
-            ).get("training_seed")
-            == 2026
-        ]
         self.config = configuration()
         self.mean = torch.tensor(self.config["preprocessing"]["mean"], device="cuda")
         self.std = torch.tensor(self.config["preprocessing"]["std"], device="cuda")
