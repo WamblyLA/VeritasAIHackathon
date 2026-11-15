@@ -40,6 +40,8 @@ igh-pollution events are defined using the training-set 90th percentile; all mod
 | SAITS | 13.592 | 26.714 | 89.71% | 81.99% | 0.8567 |
 | MDAE + history | 15.745 | 28.099 | 86.03% | 84.72% | 0.8537 |
 | Ensemble | 13.408 | 25.844 | 88.68% | 84.55% | 0.8657 |
+
+
 The validation-selected ensemble improves MAE by 1.35% over SAITS; temporal models receive additional history, so this is not an architecture-only comparison
 On paired outage endpoints, SAITS MAE rises from 9.90 at 1h to 18.01 at 168h; the ensemble rises from 9.94 to 16.83, while current-only MDAE stays at 14.66
 These are retrospective simulations on one known benchmark, not evidence that stations can safely be removed
