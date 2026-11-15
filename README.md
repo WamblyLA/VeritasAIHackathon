@@ -1,6 +1,7 @@
 # SensorGuard
 Track: AI + Climate
-Team: Not specified
+
+Team: Mathanalysis
 
 ## The problem
 City services depend on PM2.5 stations to track air pollution
