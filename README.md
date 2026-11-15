@@ -31,7 +31,7 @@ The evaluation command restores missing data and models, checks leakage and cont
 Missing checkpoints train automatically with seed 2026; existing checkpoints load without retraining
 
 ## Results
-igh-pollution events are defined using the training-set 90th percentile; all models share 1,130,940 hidden targets across repeated outage scenarios
+High-pollution events are defined as PM2.5 $\geq$ 187 µg/m³, the 90th percentile of training observations; all models share 1,130,940 hidden targets across repeated outage scenarios
 | Model | MAE | RMSE | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
 | Ridge | 18.640 | 33.430 | 82.88% | 79.88% | 0.8136 |
