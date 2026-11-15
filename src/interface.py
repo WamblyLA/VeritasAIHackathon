@@ -117,7 +117,7 @@ def simulator(values, times, stations, config):
     )
     if not available.any():
         st.warning(
-            "No current readings available | Outside the published K=1вЂ“11 benchmark"
+            "No current readings available | Outside the published K=1-11 benchmark"
         )
     reveal = st.toggle("Reveal held-out measurements", key="reveal")
     figure = go.Figure()
@@ -155,7 +155,7 @@ def simulator(values, times, stations, config):
         )
         if target.any():
             st.caption(
-                f"Offline-target MAE {np.abs(prediction[target] - measured[target]).mean():.2f} Вµg/mВі | Original source gaps are never scored"
+                f"Offline-target MAE {np.abs(prediction[target] - measured[target]).mean():.2f} µg/m³ | Original source gaps are never scored"
             )
         st.dataframe(table.round(2), hide_index=True, width="stretch", height=235)
     st.caption(
@@ -184,7 +184,7 @@ def model_results(frame):
         },
     )
     st.caption(
-        "Same held-out targets and outage masks | SAITS and temporal MDAE use 24h history | Event threshold 187 Вµg/mВі"
+        "Same held-out targets and outage masks | SAITS and temporal MDAE use 24h history | Event threshold 187 µg/m³"
     )
 
 
@@ -237,7 +237,7 @@ def continuous_failures():
     figure.update_xaxes(type="log", tickvals=[1, 6, 24, 72, 168])
     plot(figure, 270)
     st.caption(
-        "Identical endpoint hours and failed stations across durations | Current-only MDAE remains at 14.66 Вµg/mВі"
+        "Identical endpoint hours and failed stations across durations | Current-only MDAE remains at 14.66 µg/m³"
     )
 
 
@@ -253,7 +253,7 @@ def main():
         frame = pd.read_csv(ROOT / "results/metrics.csv")
         ensemble = frame.query("scope == 'overall' and method == 'ensemble'").iloc[0]
         st.markdown(
-            f"**MAE {ensemble.mae:.2f} Вµg/mВі** | **F1 {ensemble.f1:.4f}** | Beijing, 12 stations | Held-out July 2016 to February 2017"
+            f"**MAE {ensemble.mae:.2f} µg/m³** | **F1 {ensemble.f1:.4f}** | Beijing, 12 stations | Held-out July 2016 to February 2017"
         )
         values, times, stations, stats = read_data()
         simulator(values, times, stations, config)
