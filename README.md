@@ -20,7 +20,7 @@ UCI Beijing Multi-Site Air Quality provides hourly observations from 12 stations
 Models include MDAE, Extreme-aware MDAE, official PyPOTS SAITS and an 80% SAITS + 20% Extreme-aware MDAE ensemble
 Train: March 2013 to December 2015; validation: January to June 2016; test: July 2016 to February 2017, with unseen measurements artificially hidden
 Normalization uses training data only; genuine gaps are never labels; temporal inputs contain 24 past hours plus the current observed hour, without future readings
-Python 3.12 and an NVIDIA CUDA GPU are required; retrained metrics may vary, with 5% error and 0.02 event-score tolerance
+Python 3.12 and an NVIDIA CUDA GPU are required
 ```bash
 python -m pip install torch --index-url https://download.pytorch.org/whl/cu126
 python -m pip install -r requirements.txt
@@ -31,7 +31,7 @@ The evaluation command restores missing data and models, checks leakage and cont
 Missing checkpoints train automatically with seed 2026; existing checkpoints load without retraining
 
 ## Results
-Errors are in µg/m³; events use PM2.5 ≥187; all models share 1,130,940 hidden targets across repeated outage scenarios
+igh-pollution events are defined using the training-set 90th percentile; all models share 1,130,940 hidden targets across repeated outage scenarios
 | Model | MAE | RMSE | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
 | Ridge | 18.640 | 33.430 | 82.88% | 79.88% | 0.8136 |
